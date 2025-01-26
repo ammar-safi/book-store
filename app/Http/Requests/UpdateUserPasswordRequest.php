@@ -15,7 +15,7 @@ class UpdateUserPasswordRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -26,11 +26,14 @@ class UpdateUserPasswordRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "old_password" => "required|" . function () {
-                return Hash::check($this->old_password, $this->user()->password)
-                    ? true
-                    : false;
-            },
+            "old_password" => [
+                "required", 
+                function ($attribute, $value, $fail) {
+                    if (!Hash::check($value, $this->user()->password)) {
+                        $fail('The old password is incorrect.');
+                    }
+                }
+            ],
             "new_password" => "required|min:6",
             "new_password_confirmation" => "required|same:new_password",
         ];

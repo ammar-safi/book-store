@@ -7,8 +7,10 @@ use App\Http\Requests\ShowBookRequest;
 use App\Http\Requests\StoreBookRequest;
 use App\Http\Requests\UpdateBookRequest;
 use App\Http\Requests\UpdateUserPasswordRequest;
+use App\Http\Requests\UpdateUserRequest;
 use App\Http\Resources\BookResource;
 use App\Http\Resources\UserResource;
+use App\Models\Book;
 use App\Traits\FileUploader;
 use App\Traits\Response;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -40,7 +42,7 @@ class UserController extends Controller
         return $this->data($data);
     }
 
-    public function update(Request $request)
+    public function update(UpdateUserRequest $request)
     {
         try {
             DB::beginTransaction();
@@ -61,11 +63,10 @@ class UserController extends Controller
     {
         try {
             DB::beginTransaction();
-
-            $user = $request->user();
-            $user->update([
-                "password" => $request->password
+            $request->user()->update([
+                "password" => $request->new_password
             ]);
+
             DB::commit();
             return $this->success("password updated successfully");
         } catch (\Throwable $e) {
@@ -76,7 +77,6 @@ class UserController extends Controller
 
     public function store(StoreBookRequest $request)
     {
-
         try {
             DB::beginTransaction();
 
@@ -92,7 +92,7 @@ class UserController extends Controller
                 "cover" => $url,
                 "author" => $request->author
             ]);
-            
+
             $data["book"] = BookResource::make($book);
 
             DB::commit();
@@ -133,6 +133,36 @@ class UserController extends Controller
             return $this->serverError($e->getMessage());
         } catch (HttpResponseException $e) {
             return $e->getResponse();
+        }
+    }
+
+    public function delete($id)
+    {
+        try {
+            DB::beginTransaction();
+
+            $book = request()->user()->books()->whereUuid($id)->firstOrFail();
+            $book->delete();
+
+            DB::commit();
+            return $this->success("book deleted successfully");
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return $this->serverError($e->getMessage());
+        } catch (HttpResponseException $e) {
+            return $e->getResponse();
+        }
+    }
+
+    public function publishBooks()
+    {
+        try {
+            $data["books"] = BookResource::collection(
+                Book::whereNot("user_id", request()->user()->id)->get()
+            );
+            return $this->data($data);
+        } catch (\Throwable $e) {
+            return $this->serverError($e->getMessage());
         }
     }
 }
