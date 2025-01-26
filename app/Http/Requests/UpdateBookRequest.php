@@ -6,7 +6,7 @@ use App\Traits\Response;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class LoginRequest extends FormRequest
+class UpdateBookRequest extends FormRequest
 {
     use Response;
     /**
@@ -14,7 +14,7 @@ class LoginRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return True;
     }
 
     /**
@@ -25,8 +25,10 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "email" => "required|string|email|max:255|exists:users",
-            "password" => "required|string|max:255",
+            "title" => "required|string",
+            "author" => "nullable|string",
+            "cover" => "nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048",
+            "description" => "nullable|string",
         ];
     }
 

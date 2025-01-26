@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Trait\Response;
+use App\Traits\Response;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
@@ -35,6 +35,4 @@ class RegisterRequest extends FormRequest
     {
         throw new HttpResponseException($this->validationError($validator));
     }
-
-
 }

@@ -6,7 +6,9 @@ use App\Traits\Response;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class LoginRequest extends FormRequest
+use function PHPUnit\Framework\returnSelf;
+
+class ShowBookRequest extends FormRequest
 {
     use Response;
     /**
@@ -14,7 +16,14 @@ class LoginRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return True;
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'id' => $this->id,
+        ]);
     }
 
     /**
@@ -25,8 +34,16 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "email" => "required|string|email|max:255|exists:users",
-            "password" => "required|string|max:255",
+            "id" => [
+                'required',
+                'string',
+                'exists:books,uuid',
+                function ($attribute, $value, $fail) {
+                    if (!$this->user()->books()->where('uuid', $value)->exists()) {
+                        $fail('This book does not belong to you.');
+                    }
+                }
+            ]
         ];
     }
 

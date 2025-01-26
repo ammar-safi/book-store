@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->uuid()->after("id");
+        Schema::table('books', function (Blueprint $table) {
+            $table->softDeletes();
         });
     }
 
@@ -21,8 +21,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('uuid');
+        Schema::table('books', function (Blueprint $table) {
+            if (Schema::hasColumn('books', 'deleted_at')) {
+                $table->dropColumn('deleted_at');
+            }
         });
     }
 };

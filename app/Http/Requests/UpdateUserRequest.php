@@ -6,7 +6,7 @@ use App\Traits\Response;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class LoginRequest extends FormRequest
+class UpdateUserRequest extends FormRequest
 {
     use Response;
     /**
@@ -25,8 +25,8 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "email" => "required|string|email|max:255|exists:users",
-            "password" => "required|string|max:255",
+            "name" => "required|string|min:3|max:255",
+            "email" => "required|email|unique:users,email," . request()->user()->id,
         ];
     }
 

@@ -5,8 +5,9 @@ namespace App\Http\Requests;
 use App\Traits\Response;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Support\Facades\Hash;
 
-class LoginRequest extends FormRequest
+class UpdateUserPasswordRequest extends FormRequest
 {
     use Response;
     /**
@@ -14,7 +15,7 @@ class LoginRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return false;
     }
 
     /**
@@ -25,11 +26,15 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "email" => "required|string|email|max:255|exists:users",
-            "password" => "required|string|max:255",
+            "old_password" => "required|" . function () {
+                return Hash::check($this->old_password, $this->user()->password)
+                    ? true
+                    : false;
+            },
+            "new_password" => "required|min:6",
+            "new_password_confirmation" => "required|same:new_password",
         ];
     }
-
     public function failedValidation($validator)
     {
         throw new HttpResponseException($this->validationError($validator));
