@@ -18,9 +18,9 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
 
     Route::get("books", [UserController::class, "index"]);
     Route::post("books", [UserController::class, "store"]);
-    Route::get("books/{id}", [UserController::class, "show"]);
-    Route::put("books/{id}", [UserController::class, "updateBook"]);
-    Route::delete("books/{id}", [UserController::class, "delete"]);
+    Route::get("books/user/{id}", [UserController::class, "show"]);
+    Route::put("books/user/{id}", [UserController::class, "updateBook"]);
+    Route::delete("books/user/{id}", [UserController::class, "delete"]);
 
-    Route::get("books/users/publish", [UserController::class, "publishBooks"]);
+    Route::get("books/publish", [UserController::class, "publishBooks"]);
 });
