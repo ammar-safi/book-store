@@ -2,13 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory,
+    Illuminate\Database\Eloquent\Model,
+    Illuminate\Database\Eloquent\SoftDeletes,
+    Mpociot\Versionable\VersionableTrait;
 
 class Book extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, VersionableTrait;
+
 
     protected $fillable = [
         "title",
