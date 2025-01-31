@@ -2,20 +2,20 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\ShowBookRequest;
-use App\Http\Requests\StoreBookRequest;
-use App\Http\Requests\UpdateBookRequest;
-use App\Http\Requests\UpdateUserPasswordRequest;
-use App\Http\Requests\UpdateUserRequest;
-use App\Http\Resources\BookResource;
-use App\Http\Resources\UserResource;
-use App\Models\Book;
-use App\Traits\FileUploader;
-use App\Traits\Response;
-use Illuminate\Http\Exceptions\HttpResponseException;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller,
+    App\Http\Requests\ShowBookRequest,
+    App\Http\Requests\StoreBookRequest,
+    App\Http\Requests\UpdateBookRequest,
+    App\Http\Requests\UpdateUserPasswordRequest,
+    App\Http\Requests\UpdateUserRequest,
+    App\Http\Resources\BookResource,
+    App\Http\Resources\UserResource,
+    App\Models\Book,
+    App\Traits\FileUploader,
+    App\Traits\Response,
+    Illuminate\Http\Exceptions\HttpResponseException,
+    Illuminate\Http\Request,
+    Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
