@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Data\BooksData;
+use App\Data\UserData;
 use App\Http\Controllers\Controller,
     App\Http\Requests\ShowBookRequest,
     App\Http\Requests\StoreBookRequest,
@@ -25,9 +27,13 @@ class UserController extends Controller
     public function index()
     {
         try {
-            $data["user"] = UserResource::make(
-                request()->user()->load('books')
-            );
+            // $data["user"] = UserResource::make(
+            //     request()->user()->load('books')
+            // )
+            // dd(Book::firstOrFail());
+            // $data['test'] = BooksData::from(Book::firstOrFail()->toArray());
+
+            $data["user"] = UserData::from(request()->user());
             return $this->data($data);
         } catch (\Throwable $e) {
             return $this->serverError($e->getMessage());
@@ -75,8 +81,12 @@ class UserController extends Controller
         }
     }
 
-    public function store(StoreBookRequest $request)
-    {
+    public function store () {
+
+    }
+
+    // public function store(StoreBookRequest $request)
+    // {
         try {
             DB::beginTransaction();
 
@@ -101,7 +111,7 @@ class UserController extends Controller
             DB::rollBack();
             return $this->serverError($e->getMessage());
         }
-    }
+    // }
 
     public function show(ShowBookRequest $request, $id)
     {

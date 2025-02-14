@@ -16,11 +16,13 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
     Route::put("profile", [UserController::class, "update"]);
     Route::put("profile/password", [UserController::class, "updatePassword"]);
 
-    Route::get("books", [UserController::class, "index"]);
-    Route::post("books", [UserController::class, "store"]);
-    Route::get("books/user/{id}", [UserController::class, "show"]);
-    Route::put("books/user/{id}", [UserController::class, "updateBook"]);
-    Route::delete("books/user/{id}", [UserController::class, "delete"]);
+    Route::group(["prefix" => "books"], function () {
+        Route::get("/", [UserController::class, "index"]);
+        Route::post("/", [UserController::class, "store"]);
+        Route::get("/user/{id}", [UserController::class, "show"]);
+        Route::put("/user/{id}", [UserController::class, "updateBook"]);
+        Route::delete("/user/{id}", [UserController::class, "delete"]);
 
-    Route::get("books/publish", [UserController::class, "publishBooks"]);
+        Route::get("/   publish", [UserController::class, "publishBooks"]);
+    });
 });
