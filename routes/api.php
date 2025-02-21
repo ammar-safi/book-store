@@ -16,7 +16,7 @@ Route::group(["middleware" => ["authCheck"]], function () {
     Route::put("profile/password", [UserController::class, "updatePassword"]);
 
     Route::group(["prefix" => "books"], function () {
-        Route::get("/", [UserController::class, "index"]);
+        Route::get("/", [UserController::class, "myBooks"]);
         Route::post("/", [UserController::class, "store"]);
         Route::get("/user/{id}", [UserController::class, "show"]);
         Route::put("/user/{id}", [UserController::class, "updateBook"]);

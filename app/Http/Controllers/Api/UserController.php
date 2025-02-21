@@ -24,10 +24,10 @@ class UserController extends Controller
     use Response, FileUploader;
 
 
-    public function index()
+    public function myBooks()
     {
         try {
-            $data["user"] = UserData::from(request()->user("api"));
+            $data["books"] = BookResource::collection(request()->user("api")->books);
             return $this->data($data);
         } catch (\Throwable $e) {
             return $this->serverError($e->getMessage());
@@ -47,8 +47,8 @@ class UserController extends Controller
         try {
             DB::beginTransaction();
 
-            $user = $request->user();
-            $user->update($request->all());
+            $user = $request->user("api");
+            $user->update($request->validated());
             $data["user"] = UserResource::make($user);
 
             DB::commit();
@@ -86,13 +86,9 @@ class UserController extends Controller
                 $url = $url ? $url : null;
             }
 
+            $book = array_merge($request->validated(), ["cover" => $url]);
 
-            $book = $request->user("api")->books()->create([
-                "title" => $request->title,
-                "description" => $request->description,
-                "cover" => $url,
-                "author" => $request->author
-            ]);
+            $book = $request->user("api")->books()->create($book);
 
             $data["book"] = BookResource::make($book);
 
@@ -108,7 +104,7 @@ class UserController extends Controller
     {
         try {
             $data["book"] = BookResource::make(
-                $request->user("api")->books()->whereUuid($id)->firstOrFail()
+                $request->user("api")->books()->where("uuid", $id)->firstOrFail()
             );
             return $this->data($data);
         } catch (\Throwable $e) {
@@ -123,7 +119,7 @@ class UserController extends Controller
         try {
             DB::beginTransaction();
 
-            $book = request()->user("api")->books()->whereUuid($id)->firstOrFail();
+            $book = request()->user("api")->books()->where("uuid", $id)->firstOrFail();
             $book->update($request->validated());
             $data["book"] = BookResource::make($book);
 
@@ -133,6 +129,7 @@ class UserController extends Controller
             DB::rollBack();
             return $this->serverError($e->getMessage());
         } catch (HttpResponseException $e) {
+            DB::rollBack();
             return $e->getResponse();
         }
     }

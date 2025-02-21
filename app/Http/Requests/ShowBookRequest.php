@@ -39,7 +39,7 @@ class ShowBookRequest extends FormRequest
                 'string',
                 'exists:books,uuid',
                 function ($attribute, $value, $fail) {
-                    if (!$this->user()->books()->where('uuid', $value)->exists()) {
+                    if (!$this->user("api")->books()->where('uuid', $value)->exists()) {
                         $fail('This book does not belong to you.');
                     }
                 }

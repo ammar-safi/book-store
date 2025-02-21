@@ -29,7 +29,7 @@ class UpdateUserPasswordRequest extends FormRequest
             "old_password" => [
                 "required", 
                 function ($attribute, $value, $fail) {
-                    if (!Hash::check($value, $this->user()->password)) {
+                    if (!Hash::check($value, $this->user("api")->password)) {
                         $fail('The old password is incorrect.');
                     }
                 }

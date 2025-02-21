@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use App\Traits\Response;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Validation\Rule;
 
 class UpdateUserRequest extends FormRequest
 {
@@ -24,9 +25,10 @@ class UpdateUserRequest extends FormRequest
      */
     public function rules(): array
     {
+        // \Log::info();
         return [
             "name" => "required|string|min:3|max:255",
-            "email" => "required|email|unique:users,email," . request()->user()->id,
+            "email" => ["required", "email", Rule::unique('users' , "email")->ignore(auth("api")->id())],
         ];
     }
 
