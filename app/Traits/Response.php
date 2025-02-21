@@ -20,7 +20,7 @@ trait Response
     }
 
     // Unauthorize 
-    public function unauthorize($message)
+    public function unauthorize($message = "Unauthorize , please Login first")
     {
         return $this->api_response(false, $message, null, 401);
     }

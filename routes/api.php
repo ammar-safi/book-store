@@ -5,15 +5,10 @@ use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-
-Route::get("/{name}" , function ($name) {
-    echo "hi {$name}";
-});
-
 Route::post("/login", [AuthController::class, "login"]);
 Route::post("/register", [AuthController::class, "register"]);
 
-Route::group(["middleware" => ["auth:sanctum"]], function () {
+Route::group(["middleware" => ["authCheck"]], function () {
     Route::post("logout", [AuthController::class, "logout"]);
 
     Route::get("profile", [UserController::class, "profile"]);

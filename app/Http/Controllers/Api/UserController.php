@@ -27,13 +27,7 @@ class UserController extends Controller
     public function index()
     {
         try {
-            // $data["user"] = UserResource::make(
-            //     request()->user()->load('books')
-            // )
-            // dd(Book::firstOrFail());
-            // $data['test'] = BooksData::from(Book::firstOrFail()->toArray());
-
-            $data["user"] = UserData::from(request()->user());
+            $data["user"] = UserData::from(request()->user("api"));
             return $this->data($data);
         } catch (\Throwable $e) {
             return $this->serverError($e->getMessage());
@@ -43,7 +37,7 @@ class UserController extends Controller
 
     public function profile()
     {
-        $data["user"] = UserResource::make(request()->user());
+        $data["user"] = UserResource::make(request()->user("api"));
 
         return $this->data($data);
     }
@@ -69,7 +63,7 @@ class UserController extends Controller
     {
         try {
             DB::beginTransaction();
-            $request->user()->update([
+            $request->user("api")->update([
                 "password" => $request->new_password
             ]);
 
@@ -93,7 +87,7 @@ class UserController extends Controller
             }
 
 
-            $book = $request->user()->books()->create([
+            $book = $request->user("api")->books()->create([
                 "title" => $request->title,
                 "description" => $request->description,
                 "cover" => $url,
@@ -114,7 +108,7 @@ class UserController extends Controller
     {
         try {
             $data["book"] = BookResource::make(
-                $request->user()->books()->whereUuid($id)->firstOrFail()
+                $request->user("api")->books()->whereUuid($id)->firstOrFail()
             );
             return $this->data($data);
         } catch (\Throwable $e) {
@@ -129,7 +123,7 @@ class UserController extends Controller
         try {
             DB::beginTransaction();
 
-            $book = request()->user()->books()->whereUuid($id)->firstOrFail();
+            $book = request()->user("api")->books()->whereUuid($id)->firstOrFail();
             $book->update($request->validated());
             $data["book"] = BookResource::make($book);
 
@@ -148,7 +142,7 @@ class UserController extends Controller
         try {
             DB::beginTransaction();
 
-            $book = request()->user()->books()->where("uuid", $id)->firstOrFail();
+            $book = request()->user("api")->books()->where("uuid", $id)->firstOrFail();
             $book->delete();
 
             DB::commit();
@@ -166,7 +160,7 @@ class UserController extends Controller
         try {
             return $this->data([
                 "books" => BookResource::collection(
-                    Book::whereNot("user_id", request()->user()->id)->get()
+                    Book::whereNot("user_id", request()->user("api")->id)->get()
                 )
             ]);
         } catch (\Throwable $e) {
