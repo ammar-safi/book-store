@@ -18,10 +18,12 @@ use App\Http\Controllers\Controller,
     Illuminate\Http\Exceptions\HttpResponseException,
     Illuminate\Http\Request,
     Illuminate\Support\Facades\DB;
+use App\Traits\HandlesImages;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
-    use Response, FileUploader;
+    use Response, HandlesImages;
 
 
     public function myBooks()
@@ -80,22 +82,29 @@ class UserController extends Controller
     {
         try {
             DB::beginTransaction();
-
+            // $book = $request->validated();
             if ($request->hasFile("cover")) {
-                $url = $this->uploadImagePublic($request, "cover", "cover");
-                $url = $url ? $url : null;
+                $request->validate([
+                    "cover" => "required|image|mimes:jpeg,png,jpg,gif,svg|max:2048",
+                ]);
+                // $request->file('cover')->store('logos', 'public')
+                // $path = $this->uploadImage(
+                //     $request->file('cover'),
+                //     'books/covers' // storage directory
+                // );
+                $book["cover"] = $request->file('cover')->store('covers' , 'public');
             }
 
-            $book = array_merge($request->validated(), ["cover" => $url]);
 
-            $book = $request->user("api")->books()->create($book);
+            // $book = $request->user("api")->books()->create($book);
 
-            $data["book"] = BookResource::make($book);
+            // $data["book"] = BookResource::make($book);
 
             DB::commit();
-            return $this->data($data);
+            // return $this->data($data);
         } catch (\Throwable $e) {
             DB::rollBack();
+            Log::info($e);
             return $this->serverError($e->getMessage());
         }
     }

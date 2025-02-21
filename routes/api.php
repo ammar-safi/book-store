@@ -17,7 +17,7 @@ Route::group(["middleware" => ["authCheck"]], function () {
 
     Route::group(["prefix" => "books"], function () {
         Route::get("/", [UserController::class, "myBooks"]);
-        Route::post("/", [UserController::class, "store"]);
+        Route::post("/add", [UserController::class, "store"]);
         Route::get("/user/{id}", [UserController::class, "show"]);
         Route::put("/user/{id}", [UserController::class, "updateBook"]);
         Route::delete("/user/{id}", [UserController::class, "delete"]);

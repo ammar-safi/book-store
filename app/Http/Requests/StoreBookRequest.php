@@ -27,7 +27,6 @@ class StoreBookRequest extends FormRequest
         return [
             "title" => "required|string",
             "author" => "nullable|string",
-            "cover" => "nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048",
             "description" => "nullable|string",
         ];
     }
