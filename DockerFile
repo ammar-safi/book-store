@@ -1,28 +1,50 @@
 FROM php:8.1-apache
 
-# Install dependencies
-RUN apt-get update -y && apt-get install -y \
-    libwebp-dev libjpeg62-turbo-dev libpng-dev libxpm-dev \
-    libfreetype6-dev zlib1g-dev zip unzip libzip-dev \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j$(nproc) gd \
-    && docker-php-ext-install mysqli pdo pdo_mysql sockets zip exif calendar \
-    && pecl install redis && docker-php-ext-enable redis \
-    && a2enmod rewrite headers
+# 1. Install required packages
+RUN apt-get update -y && \
+    apt-get install -y \
+      libwebp-dev \
+      libjpeg62-turbo-dev \
+      libpng-dev \
+      libxpm-dev \
+      libfreetype6-dev \
+      zlib1g-dev \
+      libzip-dev \
+      zip \
+      unzip && \
+    rm -rf /var/lib/apt/lists/*
 
-# Configure Apache
+# 2. Apache + PHP extensions
+RUN echo "ServerName laravel-app.local" >> /etc/apache2/apache2.conf
 COPY vhost.conf /etc/apache2/sites-available/000-default.conf
+RUN a2enmod rewrite headers
 
-# Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# 3. Redis
+RUN pecl install -o -f redis && docker-php-ext-enable redis
 
-# Copy Composer files and install dependencies
+# 4. Common PHP extensions
+RUN docker-php-ext-install \
+    mysqli \
+    pdo \
+    pdo_mysql \
+    sockets \
+    zip \
+    exif \
+    calendar \
+    gd
+
+# 5. Memory limit
+RUN echo 'memory_limit = -1' >> /usr/local/etc/php/conf.d/docker-php-ram-limit.ini
+
+# 6. Copy app into container
 WORKDIR /var/www/html
-COPY composer.json composer.lock ./
+COPY . /var/www/html
+
+# 7. Permissions
+RUN chown -R www-data:www-data /var/www/html
+
+# 8. Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN composer install --no-dev --optimize-autoloader
 
-# Copy application code
-COPY . .
-
-# Set permissions
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+EXPOSE 80
