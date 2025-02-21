@@ -24,6 +24,7 @@ class RegisterRequest extends FormRequest
      */
     public function rules(): array
     {
+        \Log::info($this->all());
         return [
             "name" => "required|string|max:255",
             "email" => "required|string|email|max:255|unique:users",

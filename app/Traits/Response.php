@@ -42,7 +42,7 @@ trait Response
 
     public function validationError($validator)
     {
-        return $this->api_response(false, $validator->errors()->first(), null, 422);
+        return $this->api_response(false, $validator->errors()->first(), null, 400);
     }
 
     public function badRequest($message)
