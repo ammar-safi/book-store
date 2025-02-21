@@ -6,13 +6,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 
-Route::post("login", [AuthController::class, "login"]);
-Route::post("register", [AuthController::class, "register"]);
+Route::post("/login", [AuthController::class, "login"]);
+Route::post("/register", [AuthController::class, "register"]);
 
 Route::group(["middleware" => ["auth:sanctum"]], function () {
     Route::post("logout", [AuthController::class, "logout"]);
 
-    Route::get("profile", [UserController::class, "profile"]);;
+    Route::get("profile", [UserController::class, "profile"]);
     Route::put("profile", [UserController::class, "update"]);
     Route::put("profile/password", [UserController::class, "updatePassword"]);
 
@@ -22,7 +22,6 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
         Route::get("/user/{id}", [UserController::class, "show"]);
         Route::put("/user/{id}", [UserController::class, "updateBook"]);
         Route::delete("/user/{id}", [UserController::class, "delete"]);
-
-        Route::get("/   publish", [UserController::class, "publishBooks"]);
+        Route::get("/publish", [UserController::class, "publishBooks"]);
     });
 });

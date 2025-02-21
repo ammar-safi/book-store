@@ -24,42 +24,30 @@ trait FileUploader
         } else {
             $requestFile = $request->file($inputName);
         }
-        try {
-
-            $dir = 'public/images/' . $name;
-            $randomNumber = Str::random(5);
-            $fixName = $randomNumber . '.' . $requestFile->extension();
-            if ($requestFile) {
-                Storage::putFileAs($dir, $requestFile, $fixName);
-                $url = Storage::url($dir . '/' . $fixName);
-                $request->image = $fixName;
-            }
-
-            return $url;
-        } catch (\Throwable $th) {
-            // report($th);
-            // dd ($th->getMessage());
-            return false;
+        $dir = 'public/images/' . $name;
+        $randomNumber = Str::random(5);
+        $fixName = $randomNumber . '.' . $requestFile->extension();
+        if ($requestFile) {
+            Storage::putFileAs($dir, $requestFile, $fixName);
+            $url = Storage::url($dir . '/' . $fixName);
+            $request->image = $fixName;
         }
+
+        return $url;
     }
 
     public function uploadImagePrivate($request, $data, $name, $inputName = 'image')
     {
         $requestFile = $request->file($inputName);
 
-        try {
-            $dir = 'images/' . $name;
-            $randomNumber = Str::random(5);
-            $fixName = $data->id . '-' . $randomNumber . '.' . $requestFile->extension();
-            if ($requestFile) {
-                $url =  Storage::putFileAs($dir, $requestFile, $fixName);
-                $request->image = $fixName;
-            }
-            return $url;
-        } catch (\Throwable $th) {
-            report($th);
-            return $th->getMessage();
+        $dir = 'images/' . $name;
+        $randomNumber = Str::random(5);
+        $fixName = $data->id . '-' . $randomNumber . '.' . $requestFile->extension();
+        if ($requestFile) {
+            $url =  Storage::putFileAs($dir, $requestFile, $fixName);
+            $request->image = $fixName;
         }
+        return $url;
     }
 
 

@@ -81,12 +81,9 @@ class UserController extends Controller
         }
     }
 
-    public function store () {
 
-    }
-
-    // public function store(StoreBookRequest $request)
-    // {
+    public function store(StoreBookRequest $request)
+    {
         try {
             DB::beginTransaction();
 
@@ -111,7 +108,7 @@ class UserController extends Controller
             DB::rollBack();
             return $this->serverError($e->getMessage());
         }
-    // }
+    }
 
     public function show(ShowBookRequest $request, $id)
     {
@@ -151,7 +148,7 @@ class UserController extends Controller
         try {
             DB::beginTransaction();
 
-            $book = request()->user()->books()->whereUuid($id)->firstOrFail();
+            $book = request()->user()->books()->where("uuid", $id)->firstOrFail();
             $book->delete();
 
             DB::commit();
@@ -167,10 +164,11 @@ class UserController extends Controller
     public function publishBooks()
     {
         try {
-            $data["books"] = BookResource::collection(
-                Book::whereNot("user_id", request()->user()->id)->get()
-            );
-            return $this->data($data);
+            return $this->data([
+                "books" => BookResource::collection(
+                    Book::whereNot("user_id", request()->user()->id)->get()
+                )
+            ]);
         } catch (\Throwable $e) {
             return $this->serverError($e->getMessage());
         }
