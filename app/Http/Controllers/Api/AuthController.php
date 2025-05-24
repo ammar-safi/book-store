@@ -45,7 +45,7 @@ class AuthController extends Controller
 
     public function register(RegisterRequest $request)
     {
-        // try {
+        try {
             $info = $request->validated();
             DB::beginTransaction();
             $user = User::create($info);
@@ -53,9 +53,17 @@ class AuthController extends Controller
             $data["user"] = UserResource::make($user);
             DB::commit();
             return $this->data($data);
-        // } catch (\Throwable $th) {
-        //     DB::rollBack();
-        //     return $this->serverError($th->getMessage());
-        // }
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return $this->serverError($th->getMessage());
+        }
+    }
+    public function getregister(Request $request)
+    {
+        return User::create([
+            "name" => "test",
+            "email" => "test",
+            "password" => "test"
+        ]);
     }
 }
