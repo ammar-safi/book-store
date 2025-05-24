@@ -32,12 +32,14 @@ trait HandlesImages
 
         // Store file in public disk
         $path = $file->storeAs(
-            $directory,
-            $filename,
-            'public'
+            ""
+
+            // $directory,
+            // $filename,
+            // 'public'
         );
 
-        // return $path;
+        return $path;
     }
 
     /**

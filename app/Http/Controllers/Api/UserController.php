@@ -87,21 +87,21 @@ class UserController extends Controller
                 $request->validate([
                     "cover" => "required|image|mimes:jpeg,png,jpg,gif,svg|max:2048",
                 ]);
-                // $request->file('cover')->store('logos', 'public')
-                // $path = $this->uploadImage(
-                //     $request->file('cover'),
-                //     'books/covers' // storage directory
-                // );
+                $path = $this->uploadImage(
+                    $request->file('cover'),
+                    'books/covers' // storage directory
+                );
                 $book["cover"] = $request->file('cover')->store('covers' , 'public');
+                // $book["cover"] =
             }
 
 
-            // $book = $request->user("api")->books()->create($book);
+            $book = $request->user("api")->books()->create($book);
 
-            // $data["book"] = BookResource::make($book);
+            $data["book"] = BookResource::make($book);
 
             DB::commit();
-            // return $this->data($data);
+            return $this->data($data);
         } catch (\Throwable $e) {
             DB::rollBack();
             Log::info($e);

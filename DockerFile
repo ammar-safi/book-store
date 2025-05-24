@@ -1,50 +1,30 @@
-FROM php:8.1-apache
+# استخدم صورة PHP مع Apache
+FROM php:8.2-apache
 
-# 1. Install required packages
-RUN apt-get update -y && \
-    apt-get install -y \
-      libwebp-dev \
-      libjpeg62-turbo-dev \
-      libpng-dev \
-      libxpm-dev \
-      libfreetype6-dev \
-      zlib1g-dev \
-      libzip-dev \
-      zip \
-      unzip && \
-    rm -rf /var/lib/apt/lists/*
-
-# 2. Apache + PHP extensions
-RUN echo "ServerName laravel-app.local" >> /etc/apache2/apache2.conf
-COPY vhost.conf /etc/apache2/sites-available/000-default.conf
-RUN a2enmod rewrite headers
-
-# 3. Redis
-RUN pecl install -o -f redis && docker-php-ext-enable redis
-
-# 4. Common PHP extensions
-RUN docker-php-ext-install \
-    mysqli \
-    pdo \
-    pdo_mysql \
-    sockets \
+# تثبيت التبعيات
+RUN apt-get update && apt-get install -y \
+    libzip-dev \
     zip \
-    exif \
-    calendar \
-    gd
+    unzip \
+    && docker-php-ext-install pdo_mysql zip
 
-# 5. Memory limit
-RUN echo 'memory_limit = -1' >> /usr/local/etc/php/conf.d/docker-php-ram-limit.ini
+# تفعيل Apache mod_rewrite
+RUN a2enmod rewrite
 
-# 6. Copy app into container
-WORKDIR /var/www/html
-COPY . /var/www/html
+# نسخ المشروع إلى الصورة
+COPY . /var/www/html/
 
-# 7. Permissions
-RUN chown -R www-data:www-data /var/www/html
-
-# 8. Composer
+# تثبيت Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# تثبيت الاعتماديات
 RUN composer install --no-dev --optimize-autoloader
 
-EXPOSE 80
+# إعداد صلاحيات المجلدات
+RUN chown -R www-data:www-data /var/www/html/storage \
+    && chmod -R 775 /var/www/html/storage
+
+# تعيين DocumentRoot لـ Laravel
+ENV APACHE_DOCUMENT_ROOT /var/www/html/public
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
+RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
